@@ -1,0 +1,3 @@
+spring:
+  application:
+    name: sb-kafka-producer-sample
