@@ -1,0 +1,17 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+  kafka:
+    bootstrap-servers: localhost:9092
+
+app:
+  kafka:
+    order-topic: orders.created.test
+  outbox:
+    publisher:
+      enabled: false
+    batch-size: 10
+    fixed-delay-ms: 60000
