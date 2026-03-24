@@ -8,10 +8,10 @@ import org.springframework.core.task.SimpleAsyncTaskExecutor;
 @Configuration
 public class AsyncConfiguration {
 
-    @Bean(name = "taskExecutor")
-    AsyncTaskExecutor taskExecutor() {
-        SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor("order-async-");
-        executor.setVirtualThreads(true);
-        return executor;
-    }
+  @Bean(name = "taskExecutor")
+  AsyncTaskExecutor taskExecutor() {
+    SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor("order-async-");
+    executor.setVirtualThreads(true);
+    return executor;
+  }
 }

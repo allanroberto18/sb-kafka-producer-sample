@@ -13,16 +13,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 class AsyncConfigurationTest extends PostgresContainerIT {
 
-    private final AsyncTaskExecutor taskExecutor;
+  private final AsyncTaskExecutor taskExecutor;
 
-    AsyncConfigurationTest(@Qualifier("taskExecutor") AsyncTaskExecutor taskExecutor) {
-        this.taskExecutor = taskExecutor;
-    }
+  AsyncConfigurationTest(@Qualifier("taskExecutor") AsyncTaskExecutor taskExecutor) {
+    this.taskExecutor = taskExecutor;
+  }
 
-    @Test
-    void shouldExecuteAsyncTasksOnVirtualThreads() throws ExecutionException, InterruptedException {
-        boolean virtualThread = taskExecutor.submitCompletable(() -> Thread.currentThread().isVirtual()).get();
+  @Test
+  void shouldExecuteAsyncTasksOnVirtualThreads() throws ExecutionException, InterruptedException {
+    boolean virtualThread = taskExecutor.submitCompletable(() -> Thread.currentThread().isVirtual()).get();
 
-        assertThat(virtualThread).isTrue();
-    }
+    assertThat(virtualThread).isTrue();
+  }
 }

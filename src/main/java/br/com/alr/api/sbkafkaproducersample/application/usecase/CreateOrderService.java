@@ -45,10 +45,10 @@ public class CreateOrderService implements CreateOrderUseCase {
     this.objectMapper = objectMapper;
   }
 
-    @Async("taskExecutor")
-    @Transactional
-    @Override
-    public CompletableFuture<Order> create(CreateOrderCommand command) {
+  @Async("taskExecutor")
+  @Transactional
+  @Override
+  public CompletableFuture<Order> create(CreateOrderCommand command) {
     validateDuplicatedProducts(command.items());
 
     User user = loadOrderUserService.loadById(command.userId());

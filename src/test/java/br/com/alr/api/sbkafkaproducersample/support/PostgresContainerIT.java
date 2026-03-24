@@ -12,6 +12,7 @@ public abstract class PostgresContainerIT {
       .withDatabaseName("orders_test_db")
       .withUsername("postgres")
       .withPassword("postgres");
+
   private static final KafkaContainer KAFKA_CONTAINER = new KafkaContainer(DockerImageName.parse("apache/kafka-native:4.1.0"));
 
   static {
