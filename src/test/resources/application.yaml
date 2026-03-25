@@ -6,12 +6,26 @@ spring:
     enabled: true
   kafka:
     bootstrap-servers: localhost:9092
+  mail:
+    host: localhost
+    port: 1025
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
 
 app:
   kafka:
     order-topic: orders.created.test
+    invoice-consumer-group-id: invoice-consumer-${random.uuid}
+    invoice-consumer-enabled: false
+  mail:
+    from: billing@example.com
   outbox:
     publisher:
       enabled: false
     batch-size: 10
     fixed-delay-ms: 60000
+    max-attempts: 5

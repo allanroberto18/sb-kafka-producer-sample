@@ -11,5 +11,9 @@ import java.util.UUID;
 
 public interface OutboxEventJpaRepository extends JpaRepository<OutboxEventJpaEntity, UUID> {
 
-  List<OutboxEventJpaEntity> findAllByStatusInOrderByCreatedAtAsc(Collection<OutboxStatus> status, Pageable pageable);
+  List<OutboxEventJpaEntity> findAllByStatusInAndAttemptCountLessThanOrderByCreatedAtAsc(
+      Collection<OutboxStatus> status,
+      Integer maxAttempts,
+      Pageable pageable
+  );
 }

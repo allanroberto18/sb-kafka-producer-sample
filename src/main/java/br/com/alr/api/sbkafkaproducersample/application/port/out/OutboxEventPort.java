@@ -11,7 +11,7 @@ public interface OutboxEventPort {
 
   List<OutboxEvent> findAll();
 
-  List<OutboxEvent> findProcessableEvents(int limit);
+  List<OutboxEvent> findProcessableEvents(int limit, int maxAttempts);
 
   void markPublished(UUID eventId);
 

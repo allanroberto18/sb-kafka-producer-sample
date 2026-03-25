@@ -2,8 +2,7 @@ package br.com.alr.api.sbkafkaproducersample.adapter.out.persistence;
 
 import br.com.alr.api.sbkafkaproducersample.adapter.out.persistence.entity.ProductJpaEntity;
 import br.com.alr.api.sbkafkaproducersample.adapter.out.persistence.entity.UserJpaEntity;
-import br.com.alr.api.sbkafkaproducersample.adapter.out.persistence.repository.ProductJpaRepository;
-import br.com.alr.api.sbkafkaproducersample.adapter.out.persistence.repository.UserJpaRepository;
+import br.com.alr.api.sbkafkaproducersample.adapter.out.persistence.repository.*;
 import br.com.alr.api.sbkafkaproducersample.domain.enumtype.OrderStatus;
 import br.com.alr.api.sbkafkaproducersample.domain.model.Order;
 import br.com.alr.api.sbkafkaproducersample.domain.model.OrderItem;
@@ -30,9 +29,18 @@ class OrderPersistenceAdapterTest extends PostgresContainerIT {
   private UserJpaRepository userJpaRepository;
   @Autowired
   private ProductJpaRepository productJpaRepository;
+  @Autowired
+  private OrderJpaRepository orderJpaRepository;
+  @Autowired
+  private InvoiceEmailJpaRepository invoiceEmailJpaRepository;
+  @Autowired
+  private OutboxEventJpaRepository outboxEventJpaRepository;
 
   @BeforeEach
   void setUp() {
+    outboxEventJpaRepository.deleteAll();
+    invoiceEmailJpaRepository.deleteAll();
+    orderJpaRepository.deleteAll();
     productJpaRepository.deleteAll();
     userJpaRepository.deleteAll();
   }
@@ -54,6 +62,8 @@ class OrderPersistenceAdapterTest extends PostgresContainerIT {
 
     assertThat(saved.id()).isNotNull();
     assertThat(saved.items()).hasSize(1);
-    assertThat(orderPersistenceAdapter.findAll()).hasSize(1);
+    assertThat(orderPersistenceAdapter.findAll())
+        .extracting(Order::id)
+        .contains(saved.id());
   }
 }

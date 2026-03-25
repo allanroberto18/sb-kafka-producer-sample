@@ -1,6 +1,6 @@
 package br.com.alr.api.sbkafkaproducersample.adapter.out.messaging;
 
-import br.com.alr.api.sbkafkaproducersample.application.port.out.OrderEventPublisherPort;
+import br.com.alr.api.sbkafkaproducersample.application.port.out.OutboxEventDispatcherPort;
 import br.com.alr.api.sbkafkaproducersample.application.port.out.OutboxEventPort;
 import br.com.alr.api.sbkafkaproducersample.domain.model.OutboxEvent;
 import org.slf4j.Logger;
@@ -17,30 +17,40 @@ public class OutboxPublisher {
   private static final Logger LOGGER = LoggerFactory.getLogger(OutboxPublisher.class);
 
   private final OutboxEventPort outboxEventPort;
-  private final OrderEventPublisherPort orderEventPublisherPort;
+  private final java.util.List<OutboxEventDispatcherPort> dispatchers;
   private final int batchSize;
+  private final int maxAttempts;
 
   public OutboxPublisher(
       OutboxEventPort outboxEventPort,
-      OrderEventPublisherPort orderEventPublisherPort,
-      @Value("${app.outbox.batch-size}") int batchSize
+      java.util.List<OutboxEventDispatcherPort> dispatchers,
+      @Value("${app.outbox.batch-size}") int batchSize,
+      @Value("${app.outbox.max-attempts}") int maxAttempts
   ) {
     this.outboxEventPort = outboxEventPort;
-    this.orderEventPublisherPort = orderEventPublisherPort;
+    this.dispatchers = dispatchers;
     this.batchSize = batchSize;
+    this.maxAttempts = maxAttempts;
   }
 
   @Scheduled(fixedDelayString = "${app.outbox.fixed-delay-ms}")
   public void publishPendingEvents() {
-    for (OutboxEvent event : outboxEventPort.findProcessableEvents(batchSize)) {
+    for (OutboxEvent event : outboxEventPort.findProcessableEvents(batchSize, maxAttempts)) {
       try {
-        orderEventPublisherPort.publish(event);
+        resolveDispatcher(event.eventType()).dispatch(event);
         outboxEventPort.markPublished(event.id());
       } catch (Exception exception) {
         LOGGER.warn("Failed to publish outbox event {}", event.id(), exception);
         outboxEventPort.markFailed(event.id(), truncate(exception.getMessage()));
       }
     }
+  }
+
+  private OutboxEventDispatcherPort resolveDispatcher(String eventType) {
+    return dispatchers.stream()
+        .filter(dispatcher -> dispatcher.supports(eventType))
+        .findFirst()
+        .orElseThrow(() -> new IllegalStateException("No dispatcher found for outbox event type " + eventType));
   }
 
   private String truncate(String message) {

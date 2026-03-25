@@ -29,7 +29,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(properties = {
     "app.outbox.publisher.enabled=true",
-    "app.outbox.fixed-delay-ms=3600000"
+    "app.outbox.fixed-delay-ms=3600000",
+    "app.kafka.order-topic=orders.created.outbox-publisher.test"
 })
 class OutboxPublisherKafkaIntegrationTest extends PostgresContainerIT {
 

@@ -74,9 +74,9 @@ public class CreateOrderService implements CreateOrderUseCase {
 
     outboxEventPort.save(new OutboxEvent(
         UUID.randomUUID(),
-        "ORDER",
+        OutboxAggregateType.ORDER,
         savedOrder.id().toString(),
-        "ORDER_CREATED",
+        OutboxEventType.ORDER_CREATED,
         createPayload(toOrderCreatedEvent(savedOrder)),
         OutboxStatus.PENDING,
         OffsetDateTime.now(),

@@ -36,6 +36,19 @@ public class PersistenceMapper {
     return modelMapper.map(entity, OutboxEvent.class);
   }
 
+  public InvoiceEmail toDomain(InvoiceEmailJpaEntity entity) {
+    return new InvoiceEmail(
+        entity.getId(),
+        entity.getUser().getId(),
+        entity.getOrder().getId(),
+        entity.getRecipientEmail(),
+        entity.getSubject(),
+        entity.getBody(),
+        entity.getCreatedAt(),
+        entity.getSentAt()
+    );
+  }
+
   public OrderJpaEntity toEntity(Order order, UserJpaEntity user, java.util.Map<Long, ProductJpaEntity> productMap) {
     OrderJpaEntity entity = OrderJpaEntity.builder()
         .id(order.id())
@@ -61,5 +74,18 @@ public class PersistenceMapper {
 
   public OutboxEventJpaEntity toEntity(OutboxEvent event) {
     return modelMapper.map(event, OutboxEventJpaEntity.class);
+  }
+
+  public InvoiceEmailJpaEntity toEntity(InvoiceEmail invoiceEmail, UserJpaEntity user, OrderJpaEntity order) {
+    return InvoiceEmailJpaEntity.builder()
+        .id(invoiceEmail.id())
+        .user(user)
+        .order(order)
+        .recipientEmail(invoiceEmail.recipientEmail())
+        .subject(invoiceEmail.subject())
+        .body(invoiceEmail.body())
+        .createdAt(invoiceEmail.createdAt())
+        .sentAt(invoiceEmail.sentAt())
+        .build();
   }
 }

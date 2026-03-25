@@ -44,5 +44,13 @@ services:
     ports:
       - "8081:8080"
 
+  mailpit:
+    image: axllent/mailpit:v1.27
+    container_name: sb-kafka-producer-mailpit
+    restart: unless-stopped
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
 volumes:
   postgres_data:

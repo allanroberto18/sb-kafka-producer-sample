@@ -39,9 +39,13 @@ public class OutboxEventPersistenceAdapter implements OutboxEventPort {
   }
 
   @Override
-  public List<OutboxEvent> findProcessableEvents(int limit) {
+  public List<OutboxEvent> findProcessableEvents(int limit, int maxAttempts) {
     return outboxEventJpaRepository
-        .findAllByStatusInOrderByCreatedAtAsc(List.of(OutboxStatus.PENDING, OutboxStatus.FAILED), PageRequest.of(0, limit))
+        .findAllByStatusInAndAttemptCountLessThanOrderByCreatedAtAsc(
+            List.of(OutboxStatus.PENDING, OutboxStatus.FAILED),
+            maxAttempts,
+            PageRequest.of(0, limit)
+        )
         .stream()
         .map(persistenceMapper::toDomain)
         .toList();
@@ -63,5 +67,6 @@ public class OutboxEventPersistenceAdapter implements OutboxEventPort {
     entity.setStatus(OutboxStatus.FAILED);
     entity.setProcessedAt(OffsetDateTime.now());
     entity.setErrorMessage(errorMessage);
+    entity.setAttemptCount(entity.getAttemptCount() + 1);
   }
 }

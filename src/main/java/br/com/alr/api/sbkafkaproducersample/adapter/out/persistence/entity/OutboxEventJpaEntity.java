@@ -43,4 +43,7 @@ public class OutboxEventJpaEntity {
 
   @Column(name = "error_message", columnDefinition = "TEXT")
   private String errorMessage;
+
+  @Column(name = "attempt_count", nullable = false)
+  private Integer attemptCount;
 }

@@ -51,7 +51,7 @@ class KafkaOrderEventPublisherTest {
 
     when(kafkaTemplate.send(eq("orders.created"), eq("99"), eq(payload))).thenReturn(CompletableFuture.completedFuture(null));
 
-    publisher.publish(outboxEvent);
+    publisher.dispatch(outboxEvent);
 
     verify(kafkaTemplate).send("orders.created", "99", payload);
   }

@@ -160,6 +160,7 @@ public class ModelMapperConfiguration {
       entity.setCreatedAt(source.createdAt());
       entity.setProcessedAt(source.processedAt());
       entity.setErrorMessage(source.errorMessage());
+      entity.setAttemptCount(0);
       return entity;
     };
   }

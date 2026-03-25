@@ -35,13 +35,44 @@ class OutboxEventPersistenceAdapterTest extends PostgresContainerIT {
         null
     ));
 
-    assertThat(outboxEventPersistenceAdapter.findProcessableEvents(10)).hasSize(1);
+    assertThat(outboxEventPersistenceAdapter.findProcessableEvents(10, 5))
+        .filteredOn(event -> event.id().equals(id))
+        .singleElement()
+        .extracting(OutboxEvent::status)
+        .isEqualTo(OutboxStatus.PENDING);
 
     outboxEventPersistenceAdapter.markPublished(id);
 
     assertThat(outboxEventPersistenceAdapter.findAll())
+        .filteredOn(event -> event.id().equals(id))
         .singleElement()
         .extracting(OutboxEvent::status)
         .isEqualTo(OutboxStatus.PUBLISHED);
+  }
+
+  @Test
+  void shouldStopReturningFailedEventsAfterMaxAttempts() {
+    UUID id = UUID.fromString("33333333-3333-3333-3333-333333333333");
+    outboxEventPersistenceAdapter.save(new OutboxEvent(
+        id,
+        "ORDER",
+        "2",
+        "ORDER_CREATED",
+        "{\"orderId\":2}",
+        OutboxStatus.PENDING,
+        OffsetDateTime.parse("2026-03-24T10:15:30Z"),
+        null,
+        null
+    ));
+
+    outboxEventPersistenceAdapter.markFailed(id, "first");
+    outboxEventPersistenceAdapter.markFailed(id, "second");
+
+    assertThat(outboxEventPersistenceAdapter.findProcessableEvents(10, 3))
+        .extracting(OutboxEvent::id)
+        .contains(id);
+    assertThat(outboxEventPersistenceAdapter.findProcessableEvents(10, 2))
+        .extracting(OutboxEvent::id)
+        .doesNotContain(id);
   }
 }

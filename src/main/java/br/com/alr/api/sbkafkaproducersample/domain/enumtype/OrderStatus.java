@@ -1,5 +1,6 @@
 package br.com.alr.api.sbkafkaproducersample.domain.enumtype;
 
 public enum OrderStatus {
-  CREATED
+  CREATED,
+  INVOICE_DELIVERED
 }

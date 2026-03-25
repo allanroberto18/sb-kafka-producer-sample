@@ -2,7 +2,9 @@ package br.com.alr.api.sbkafkaproducersample.application.port.out;
 
 import br.com.alr.api.sbkafkaproducersample.domain.model.OutboxEvent;
 
-public interface OrderEventPublisherPort {
+public interface OutboxEventDispatcherPort {
 
-  void publish(OutboxEvent event);
+  boolean supports(String eventType);
+
+  void dispatch(OutboxEvent event);
 }
